@@ -10,7 +10,7 @@ from handlers.private.start import bot_start
 from keyboards.default.admin_buttons import admin_main_buttons
 from loader import dp, db
 from states.admin import AdminStates
-from utils.db_functions import send_message_to_users, send_media_group_to_users
+from services.db_functions import send_message_to_users, send_media_group_to_users
 
 WARNING_TEXT = (
     "Habar yuborishdan oldin postingizni yaxshilab tekshirib oling!\n\n"

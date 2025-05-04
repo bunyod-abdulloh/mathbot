@@ -5,6 +5,6 @@ class BooksDB:
     def __init__(self, db: Database):
         self.db = db
 
-    async def add_book(self, name, question_number, answer):
-        sql = """ INSERT INTO books (name, question_number, answer) VALUES ($1, $2, $3) RETURNING id """
-        return await self.db.execute(sql, name, question_number, answer, fetchval=True)
+    async def add_book(self, name):
+        sql = """ INSERT INTO books (name) VALUES ($1) RETURNING id """
+        return await self.db.execute(sql, name, fetchval=True)
