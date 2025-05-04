@@ -17,9 +17,9 @@ class BooksDB:
         sql = """ UPDATE books SET book_id = $3, question_number = $1, answer = $2 WHERE id = $3 """
         await self.db.execute(sql, question_number, answer, book_id, execute=True)
 
-    async def count_answers_on_book(self, book_id):
-        sql = """ SELECT COUNT(id) FROM books WHERE book_id = $1 """
-        return await self.db.execute(sql, book_id, fetchval=True)
+    async def get_correct_answers(self, book_id):
+        sql = """ SELECT answer FROM books WHERE book_id = $1 """
+        return await self.db.execute(sql, book_id, fetch=True)
 
 
     async def get_book_name(self, book_id):

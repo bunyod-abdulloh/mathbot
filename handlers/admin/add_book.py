@@ -49,9 +49,10 @@ async def handle_add_keys_text_st(message: types.Message, state: FSMContext):
         question_answer = str()
         for index, answer in enumerate(answers, start=1):
             if index == 1:
-                await bks.update_question(question_number=index, answer=answer, book_id=book_id)
+                await bks.update_question(question_number=index, answer=answer.lower(), book_id=book_id)
             else:
-                await bks.add_question(book_id=book_id, book_name=book_name, question_number=index, answer=answer)
+                await bks.add_question(book_id=book_id, book_name=book_name, question_number=index,
+                                       answer=answer.lower())
             question_answer += f" {index}. {answer.upper()}  "
             if index % 4 == 0:
                 question_answer += "\n\n"
