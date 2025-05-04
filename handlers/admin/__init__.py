@@ -1,2 +1,2 @@
-from . import admin_page
+from . import main
 
