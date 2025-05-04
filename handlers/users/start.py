@@ -26,7 +26,8 @@ async def bot_start(message: types.Message, state: FSMContext):
     books = await bks.get_books()
     await message.answer(
         text=f"Assalomu alaykum, {message.from_user.full_name}!\n\nKanalga majburiy obuna kerak bo'lsa yoki boshqa har "
-             f"qanday funksiyalar kerak bo'lsa qo'shib beramiz! Bemalol murojaat qilavering!")
+             f"qanday funksiyalar kerak bo'lsa qo'shib beramiz! Bemalol murojaat qilavering!\n\n"
+             f"Admin panelni ishlatish uchun /admin buyrug'ini kiriting\n\n")
     if not books:
         await message.answer(text="Hozircha testlar mavjud emas!")
     else:
