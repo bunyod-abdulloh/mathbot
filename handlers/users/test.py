@@ -18,23 +18,6 @@ async def handle_user_test(call: types.CallbackQuery, state: FSMContext):
     await UserStates.GET_ANSWERS.set()
 
 
-#
-# @dp.message_handler(state=UserStates.GET_ANSWERS, content_types=types.ContentType.TEXT)
-# async def handle_user_answers(message: types.Message, state: FSMContext):
-#     data = await state.get_data()
-#     len_answers = await bks.count_answers_on_book(book_id=data.get('user_book_id'))
-#
-#     user_answers = list(message.text)
-#
-#     if len_answers == len(user_answers):
-#         await message.answer(text="Javoblar qabul qilindi!")
-#
-#     else:
-#         await message.answer(
-#             text=f"Siz barcha savollarga javob bermadingiz!\n\nJami savollar soni: {len_answers} ta\n\n"
-#                  f"Siz yuborgan javoblar soni: {len(user_answers)} ta\n\nJavoblarni qayta yuboring")
-#
-
 @dp.message_handler(state=UserStates.GET_ANSWERS, content_types=types.ContentType.TEXT)
 async def handle_user_answers(message: types.Message, state: FSMContext):
     data = await state.get_data()
@@ -43,7 +26,7 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
     # Ma'lumotlar bazasidan test uchun to'g'ri javoblarni olish
     correct_answers = await bks.get_correct_answers(book_id=book_id)
     len_answers = len(correct_answers)
-    print(correct_answers)
+
     user_answers_text = message.text.strip().lower()
     user_answers = list(user_answers_text)
 
