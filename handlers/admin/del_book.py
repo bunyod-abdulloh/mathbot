@@ -3,32 +3,25 @@ from aiogram.dispatcher import FSMContext
 from magic_filter import F
 
 from filters.admins import IsBotAdminFilter
-from keyboards.inline.admin_ikb import admin_del_tests
 from loader import dp, bks
+from services.admin.book import show_delete_tests_menu
 
 
 @dp.message_handler(IsBotAdminFilter(), F.text == "Test o'chirish", state="*")
 async def handle_del_test(message: types.Message, state: FSMContext):
     await state.finish()
-    tests = await bks.get_books()
-    if not tests:
-        await message.answer(text="Hozircha bazada testlar to'plami mavjud emas!")
-    else:
-        await message.answer(text="O'chirilishi kerak bo'lgan testlar to'plamini tanlang",
-                             reply_markup=admin_del_tests(tests=tests))
+    await show_delete_tests_menu(message)
 
 
 @dp.callback_query_handler(F.data.startswith("del_test:"))
-async def handle_del_test_ck(call: types.CallbackQuery):
-    book_id = int(call.data.split(":")[1])
-
-    await bks.delete_book(book_id=book_id)
-    tests = await bks.get_books()
+async def handle_del_test_cb(call: types.CallbackQuery):
     try:
-        if not tests:
-            await call.message.edit_text(text="Barcha test to'plamlari o'chirildi!")
+        book_id = call.data.split(":")[1]
+        if book_id.isdigit():
+            await bks.delete_book(book_id=int(book_id))
         else:
-            await call.message.edit_text(text="O'chirilishi kerak bo'lgan testlar to'plamini tanlang",
-                                         reply_markup=admin_del_tests(tests=tests))
-    except ValueError:
-        print("sasa")
+            await bks.delete_book_not_book_id()
+
+        await show_delete_tests_menu(call.message, is_edit=True)
+    except Exception as e:
+        await call.message.edit_text(f"Xatolik yuz berdi: {str(e)}")

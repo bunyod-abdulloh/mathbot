@@ -3,7 +3,8 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import CommandStart
 
 from data.config import CHANNEL
-from loader import dp, bot
+from keyboards.inline.users_ikb import user_main_ikb
+from loader import dp, bot, bks
 
 
 async def send_welcome_message(message: types.Message):
@@ -22,7 +23,13 @@ async def send_welcome_message(message: types.Message):
 @dp.message_handler(CommandStart(), state="*")
 async def bot_start(message: types.Message, state: FSMContext):
     await state.finish()
-    await message.answer(text="Salom")
+    books = await bks.get_books()
+
+    if not books:
+        await message.answer(text="Hozircha testlar mavjud emas!")
+    else:
+        await message.answer(text="Javoblarni yuborish uchun testni tanlang",
+                             reply_markup=user_main_ikb(books=books))
 
 #
 # @dp.message_handler(IsBotAdminFilter(), F.text == "add_users")
