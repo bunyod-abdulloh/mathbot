@@ -34,33 +34,35 @@ class Database:
     async def create_tables(self):
         queries = [
             """
-                CREATE TABLE IF NOT EXISTS users (
-                    id SERIAL PRIMARY KEY,
-                    telegram_id BIGINT NOT NULL UNIQUE                                                    
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                telegram_id BIGINT NOT NULL UNIQUE                                                    
             );
             """,
             """
-                CREATE TABLE IF NOT EXISTS books (
-                    id SERIAL PRIMARY KEY,
-                    name VARCHAR(190) NULL,
-                    question_number INTEGER NULL,
-                    answer VARCHAR(10) NULL,
-                    created_at DATE DEFAULT CURRENT_DATE            
-                );
+            CREATE TABLE IF NOT EXISTS books (
+                id SERIAL PRIMARY KEY,
+                book_id BIGINT NULL,
+                name VARCHAR(190) NULL,
+                question_number INTEGER NULL,
+                answer VARCHAR(10) NULL,
+                created_at DATE DEFAULT CURRENT_DATE            
+            );
             """,
             """
-                CREATE TABLE IF NOT EXISTS students (
-                    id SERIAL PRIMARY KEY,
-                    user_id BIGINT NULL,
-                    book_id INTEGER NULL,
-                    question_number INTEGER NULL,
-                    answer VARCHAR(10) NULL
+            CREATE TABLE IF NOT EXISTS students (
+                id SERIAL PRIMARY KEY,
+                user_id BIGINT NULL,
+                book_id INTEGER NULL,
+                question_number INTEGER NULL,
+                answer VARCHAR(10) NULL
+            );
             """,
             """
-                CREATE TABLE IF NOT EXISTS admins (
-                    id SERIAL PRIMARY KEY,
-                    status BOOLEAN DEFAULT FALSE                                
-                );
+            CREATE TABLE IF NOT EXISTS admins (
+                id SERIAL PRIMARY KEY,
+                status BOOLEAN DEFAULT FALSE                                
+            );
             """
         ]
         for query in queries:
