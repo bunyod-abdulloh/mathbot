@@ -2,12 +2,12 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import CommandStart
 
-from data.config import CHANNEL
 from keyboards.inline.users_ikb import user_main_ikb
 from loader import dp, bot, bks
 
 
 async def send_welcome_message(message: types.Message):
+    CHANNEL = None
     chat = await bot.get_chat(CHANNEL)
 
     markup = types.InlineKeyboardMarkup(row_width=1)
@@ -24,7 +24,9 @@ async def send_welcome_message(message: types.Message):
 async def bot_start(message: types.Message, state: FSMContext):
     await state.finish()
     books = await bks.get_books()
-
+    await message.answer(
+        text=f"Assalomu alaykum, {message.from_user.full_name}!\n\nKanalga majburiy obuna kerak bo'lsa yoki boshqa har "
+             f"qanday funksiyalar kerak bo'lsa qo'shib beramiz! Bemalol murojaat qilavering!")
     if not books:
         await message.answer(text="Hozircha testlar mavjud emas!")
     else:

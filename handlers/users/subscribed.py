@@ -3,7 +3,6 @@ from aiogram.utils.deep_linking import get_start_link
 from magic_filter import F
 
 from data.config import CHANNEL
-
 from loader import bot, dp
 
 
@@ -19,6 +18,7 @@ async def invite_link_(user_id):
 
 @dp.callback_query_handler(F.data == "subscribed")
 async def subscribe_callback(call: types.CallbackQuery):
+    CHANNEL = None
     status = (await bot.get_chat_member(chat_id=CHANNEL, user_id=call.from_user.id)).status
 
     if status == 'left' or status == 'kick':
