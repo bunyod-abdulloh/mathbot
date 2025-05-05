@@ -20,13 +20,16 @@ async def handle_user_main(message: types.Message, state: FSMContext):
 
 @dp.callback_query_handler(F.data.startswith("user_test:"))
 async def handle_user_test(call: types.CallbackQuery, state: FSMContext):
+    await call.answer(cache_time=0)
     book_id = int(call.data.split(":")[1])
     await state.update_data(user_book_id=book_id)
-    book_name = await bks.get_book_name(book_id=book_id)
+    book = await bks.get_book_name_file_id(book_id=book_id)
 
-    await call.message.edit_text(text=f"Tanlangan test nomi: {book_name}\n\n"
-                                      f"Javoblarni kiriting\n\n(javoblar faqat lotin harflarida kiritilishi lozim! katta "
-                                      f"kichikligini ahamiyati yo'q):\n\n<b>Namuna: abcdabcdabcd</b>")
+    await call.message.answer_document(document=book['file_id'],
+                                       caption=f"Tanlangan test nomi: {book['name']}\n\n"
+                                               f"Javoblarni kiriting\n\n(javoblar faqat lotin harflarida kiritilishi "
+                                               f"lozim! katta kichikligini ahamiyati yo'q):\n\n"
+                                               f"<b>Namuna: abcdabcdabcd</b>")
     await UserStates.GET_ANSWERS.set()
 
 

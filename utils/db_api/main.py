@@ -43,6 +43,7 @@ class Database:
             CREATE TABLE IF NOT EXISTS books (
                 id SERIAL PRIMARY KEY,
                 book_id BIGINT NULL,
+                file_id VARCHAR(200) NULL,
                 name VARCHAR(190) NULL,
                 question_number INTEGER NULL,
                 answer VARCHAR(10) NULL,

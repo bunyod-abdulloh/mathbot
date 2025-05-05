@@ -13,6 +13,10 @@ class BooksDB:
         sql = """ INSERT INTO books (book_id, name, question_number, answer) VALUES ($1, $2, $3, $4) """
         await self.db.execute(sql, book_id, book_name, question_number, answer, execute=True)
 
+    async def set_book_file_id(self, file_id, book_id):
+        sql = """ UPDATE books SET file_id = $1 WHERE book_id = $2"""
+        return await self.db.execute(sql, file_id, book_id, execute=True)
+
     async def update_question(self, question_number, answer, book_id):
         sql = """ UPDATE books SET book_id = $3, question_number = $1, answer = $2 WHERE id = $3 """
         await self.db.execute(sql, question_number, answer, book_id, execute=True)
@@ -25,6 +29,10 @@ class BooksDB:
     async def get_book_name(self, book_id):
         sql = """ SELECT name FROM books WHERE id = $1 """
         return await self.db.execute(sql, book_id, fetchval=True)
+
+    async def get_book_name_file_id(self, book_id):
+        sql = """ SELECT name, file_id FROM books WHERE book_id = $1 """
+        return await self.db.execute(sql, book_id, fetchrow=True)
 
     async def get_books(self):
         sql = """ SELECT DISTINCT ON (book_id) book_id, name, id FROM books ORDER BY book_id, id DESC """

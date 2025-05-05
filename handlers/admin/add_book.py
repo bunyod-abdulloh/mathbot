@@ -15,6 +15,20 @@ async def handle_add_test_st(message: types.Message, state: FSMContext):
     await state.finish()
     try:
         book_id = await bks.add_book(name=message.text.strip())
+        await message.answer(text="Qabul qilindi!\n\nSavollar kitobini pdf shaklini yuboring")
+        await state.update_data(admin_book_id=int(book_id))
+        await AdminStates.ADD_BOOK_PDF.set()
+    except Exception as err:
+        logging.info(err)
+
+
+@dp.message_handler(state=AdminStates.ADD_BOOK_PDF, content_types=types.ContentType.DOCUMENT)
+async def handle_get_pdf(message: types.Message, state: FSMContext):
+    data = await state.get_data()
+    book_id = data.get("admin_book_id")
+    try:
+        file_id = message.document.file_id
+        await bks.set_book_file_id(file_id=file_id, book_id=book_id)
         await message.answer(text="Qabul qilindi!\n\nKalit kiritish turini tanlang",
                              reply_markup=admin_get_keys_ikb(book_id=book_id))
     except Exception as err:
