@@ -42,10 +42,9 @@ async def handle_add_keys_xls(call: types.CallbackQuery):
                       show_alert=True)
 
 
-@dp.callback_query_handler(F.data.startswith("admin_keys_text:"))
+@dp.callback_query_handler(F.data.startswith("admin_keys_text:"), state="*")
 async def handle_add_keys_text(call: types.CallbackQuery, state: FSMContext):
     book_id = int(call.data.split(":")[1])
-    await state.update_data(admin_book_id=book_id)
     await call.message.edit_text(text="Kalitlarni kiriting\n\n"
                                       "<b>Namuna: abcdabcdabcdabcd</b>")
     await AdminStates.ADD_TEXT_KEYS.set()
@@ -55,7 +54,7 @@ async def handle_add_keys_text(call: types.CallbackQuery, state: FSMContext):
 async def handle_add_keys_text_st(message: types.Message, state: FSMContext):
     try:
         data = await state.get_data()
-        book_id = int(data.get('admin_book_id'))
+        book_id = data.get('admin_book_id')
         book_name = await bks.get_book_name(book_id=book_id)
 
         answers = list(message.text)
