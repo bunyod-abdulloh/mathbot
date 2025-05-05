@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import CommandStart
 
-from data.config import ADMIN_GROUP
+from data.config import ADMINS
 from keyboards.inline.users_ikb import user_main_ikb
 from loader import dp, bot, bks, udb
 
@@ -25,7 +25,7 @@ async def send_welcome_message(message: types.Message):
 async def bot_start(message: types.Message, state: FSMContext):
     await state.finish()
     await udb.add_user(telegram_id=message.from_user.id)
-    await bot.send_message(chat_id=ADMIN_GROUP,
+    await bot.send_message(chat_id=ADMINS[0],
                            text=f"{message.from_user.full_name} | <code>{message.from_user.id}</code>")
     books = await bks.get_books()
     await message.answer(
