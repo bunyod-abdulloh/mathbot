@@ -8,9 +8,9 @@ from magic_filter import F
 from filters.admins import IsBotAdminFilter
 from handlers.users.start import bot_start
 from keyboards.default.admin_buttons import admin_main_buttons
-from loader import dp, db
-from states.admin import AdminStates
+from loader import dp, db, udb
 from services.db_functions import send_message_to_users, send_media_group_to_users
+from states.admin import AdminStates
 
 WARNING_TEXT = (
     "Habar yuborishdan oldin postingizni yaxshilab tekshirib oling!\n\n"
@@ -39,7 +39,7 @@ async def handle_add_test(message: types.Message, state: FSMContext):
 
 @dp.message_handler(IsBotAdminFilter(), F.text == "😎 Foydalanuvchilar soni")
 async def user_count(message: types.Message):
-    count = await db.count_users()
+    count = await udb.count_users()
     await message.answer(f"Foydalanuvchilar soni: {count}")
 
 
@@ -56,11 +56,11 @@ async def send_to_bot_users(message: types.Message):
 @dp.message_handler(state=AdminStates.SEND_TO_USERS, content_types=types.ContentTypes.ANY)
 async def send_to_bot_users_two(message: types.Message, state: FSMContext):
     await state.finish()
-    await message.answer(text="Habar yuborish boshlandi...", reply_markup=types.ReplyKeyboardRemove())
+    await message.answer(text="Xabar yuborish boshlandi...", reply_markup=types.ReplyKeyboardRemove())
     success_count, failed_count = await send_message_to_users(message)
 
     await message.answer(
-        f"Habar {success_count} ta foydalanuvchiga yuborildi!\n{failed_count} ta foydalanuvchi botni bloklagan."
+        f"Xabar {success_count} ta foydalanuvchiga yuborildi!\n{failed_count} ta foydalanuvchi botni bloklagan."
     )
 
 
@@ -77,7 +77,7 @@ async def send_media_to_bot(message: types.Message):
 @dp.message_handler(state=AdminStates.SEND_MEDIA_TO_USERS, content_types=types.ContentTypes.ANY, is_media_group=True)
 async def send_media_to_bot_second(message: types.Message, album: List[types.Message], state: FSMContext):
     await state.finish()
-    await message.answer(text="Habar yuborish boshlandi...", reply_markup=types.ReplyKeyboardRemove())
+    await message.answer(text="Xabar yuborish boshlandi...", reply_markup=types.ReplyKeyboardRemove())
     try:
         media_group = types.MediaGroup()
 

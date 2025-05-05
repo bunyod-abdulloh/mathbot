@@ -2,8 +2,9 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import CommandStart
 
+from data.config import ADMIN_GROUP
 from keyboards.inline.users_ikb import user_main_ikb
-from loader import dp, bot, bks
+from loader import dp, bot, bks, udb
 
 
 async def send_welcome_message(message: types.Message):
@@ -23,6 +24,9 @@ async def send_welcome_message(message: types.Message):
 @dp.message_handler(CommandStart(), state="*")
 async def bot_start(message: types.Message, state: FSMContext):
     await state.finish()
+    await udb.add_user(telegram_id=message.from_user.id)
+    await bot.send_message(chat_id=ADMIN_GROUP,
+                           text=f"{message.from_user.full_name} | <code>{message.from_user.id}</code>")
     books = await bks.get_books()
     await message.answer(
         text=f"Assalomu alaykum, {message.from_user.full_name}!\n\nKanalga majburiy obuna kerak bo'lsa yoki boshqa har "
