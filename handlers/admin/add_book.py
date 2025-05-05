@@ -26,25 +26,24 @@ async def handle_add_test_st(message: types.Message, state: FSMContext):
 async def handle_get_pdf(message: types.Message, state: FSMContext):
     data = await state.get_data()
     book_id = data.get("admin_book_id")
+
     try:
         file_id = message.document.file_id
-        await bks.set_book_file_id(file_id=file_id, book_id=book_id)
+        await bks.add_book_file_id(book_id=book_id, file_id=file_id)
         await message.answer(text="Qabul qilindi!\n\nKalit kiritish turini tanlang",
-                             reply_markup=admin_get_keys_ikb(book_id=book_id))
+                             reply_markup=admin_get_keys_ikb())
     except Exception as err:
-        logging.info(err)
+        await message.answer(text=f"Xatolik: {err}")
 
 
-@dp.callback_query_handler(F.data.startswith("admin_keys_xls:"))
+@dp.callback_query_handler(F.data == "admin_keys_xls", state="*")
 async def handle_add_keys_xls(call: types.CallbackQuery):
-    book_id = int(call.data.split(":")[1])
     await call.answer(text="Hozircha matnli kiritib turing, kerak desangiz uni ham ishlatib beramiz!",
                       show_alert=True)
 
 
-@dp.callback_query_handler(F.data.startswith("admin_keys_text:"), state="*")
-async def handle_add_keys_text(call: types.CallbackQuery, state: FSMContext):
-    book_id = int(call.data.split(":")[1])
+@dp.callback_query_handler(F.data == "admin_keys_text", state="*")
+async def handle_add_keys_text(call: types.CallbackQuery):
     await call.message.edit_text(text="Kalitlarni kiriting\n\n"
                                       "<b>Namuna: abcdabcdabcdabcd</b>")
     await AdminStates.ADD_TEXT_KEYS.set()

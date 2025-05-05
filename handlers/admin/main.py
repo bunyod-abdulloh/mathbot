@@ -31,7 +31,7 @@ async def back_to_main_page(message: types.Message, state: FSMContext):
     await bot_start(message, state)
 
 
-@dp.message_handler(IsBotAdminFilter(), F.text == "Test qo'shish", state="*")
+@dp.message_handler(IsBotAdminFilter(), F.text == "➕ Test qo'shish", state="*")
 async def handle_add_test(message: types.Message, state: FSMContext):
     await state.finish()
     await message.answer(text="Savollar kitobi nomi yoki raqamini yuboring")

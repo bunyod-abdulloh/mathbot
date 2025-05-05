@@ -7,7 +7,7 @@ from loader import dp, bks
 from services.admin.book import show_delete_tests_menu
 
 
-@dp.message_handler(IsBotAdminFilter(), F.text == "Test o'chirish", state="*")
+@dp.message_handler(IsBotAdminFilter(), F.text == "➖ Test o'chirish", state="*")
 async def handle_del_test(message: types.Message, state: FSMContext):
     await state.finish()
     await show_delete_tests_menu(message)

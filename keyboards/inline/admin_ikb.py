@@ -1,10 +1,10 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-def admin_get_keys_ikb(book_id):
+def admin_get_keys_ikb():
     btn = InlineKeyboardMarkup()
-    btn.add(InlineKeyboardButton(text="Excel kiritish", callback_data=f"admin_keys_xls:{book_id}"))
-    btn.add(InlineKeyboardButton(text="Matn kiritish", callback_data=f"admin_keys_text:{book_id}"))
+    btn.add(InlineKeyboardButton(text="Excel kiritish", callback_data=f"admin_keys_xls"))
+    btn.add(InlineKeyboardButton(text="Matn kiritish", callback_data=f"admin_keys_text"))
     return btn
 
 

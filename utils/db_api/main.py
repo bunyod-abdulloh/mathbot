@@ -42,14 +42,20 @@ class Database:
             """
             CREATE TABLE IF NOT EXISTS books (
                 id SERIAL PRIMARY KEY,
-                book_id BIGINT NULL,
-                file_id VARCHAR(200) NULL,
+                book_id BIGINT NULL,                
                 name VARCHAR(190) NULL,
                 question_number INTEGER NULL,
                 answer VARCHAR(10) NULL,
                 created_at DATE DEFAULT CURRENT_DATE            
             );
             """,
+            """
+            CREATE TABLE IF NOT EXISTS book_ids (
+                id SERIAL PRIMARY KEY,
+                book_id INTEGER NULL,
+                file_id VARCHAR(200) NULL
+            );
+            """
             """
             CREATE TABLE IF NOT EXISTS students (
                 id SERIAL PRIMARY KEY,

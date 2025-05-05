@@ -18,7 +18,7 @@ async def handle_user_main(message: types.Message, state: FSMContext):
                              reply_markup=user_main_ikb(books=books))
 
 
-@dp.callback_query_handler(F.data.startswith("user_test:"))
+@dp.callback_query_handler(F.data.startswith("user_test:"), state="*")
 async def handle_user_test(call: types.CallbackQuery, state: FSMContext):
     await call.answer(cache_time=0)
     book_id = int(call.data.split(":")[1])
