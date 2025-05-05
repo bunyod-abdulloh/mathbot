@@ -2,9 +2,8 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import CommandStart
 
-from data.config import ADMINS
-from keyboards.inline.users_ikb import user_main_ikb
-from loader import dp, bot, bks, udb
+from keyboards.default.users_dkb import user_main_dkb
+from loader import dp, bot, udb
 
 
 async def send_welcome_message(message: types.Message):
@@ -25,18 +24,9 @@ async def send_welcome_message(message: types.Message):
 async def bot_start(message: types.Message, state: FSMContext):
     await state.finish()
     await udb.add_user(telegram_id=message.from_user.id)
-    await bot.send_message(chat_id=ADMINS[0],
-                           text=f"{message.from_user.full_name} | <code>{message.from_user.id}</code>")
-    books = await bks.get_books()
-    await message.answer(
-        text=f"Assalomu alaykum, {message.from_user.full_name}!\n\nKanalga majburiy obuna kerak bo'lsa yoki boshqa har "
-             f"qanday funksiyalar kerak bo'lsa qo'shib beramiz! Bemalol murojaat qilavering!\n\n"
-             f"Admin panelni ishlatish uchun /admin buyrug'ini kiriting\n\n")
-    if not books:
-        await message.answer(text="Hozircha testlar mavjud emas!")
-    else:
-        await message.answer(text="Javoblarni yuborish uchun testni tanlang",
-                             reply_markup=user_main_ikb(books=books))
+
+    await message.answer(text=f"Assalomu alaykum, {message.from_user.full_name}! Botimizga xush kelibsiz!",
+                         reply_markup=user_main_dkb)
 
 #
 # @dp.message_handler(IsBotAdminFilter(), F.text == "add_users")

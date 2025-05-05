@@ -2,8 +2,20 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from magic_filter import F
 
+from keyboards.inline.users_ikb import user_main_ikb
 from loader import dp, bks
 from states.users import UserStates
+
+
+@dp.message_handler(F.text == "✅ Javoblarni kiritish", state="*")
+async def handle_user_main(message: types.Message, state: FSMContext):
+    await state.finish()
+    books = await bks.get_books()
+    if not books:
+        await message.answer(text="Hozircha testlar mavjud emas!")
+    else:
+        await message.answer(text="Javoblarni yuborish uchun testni tanlang",
+                             reply_markup=user_main_ikb(books=books))
 
 
 @dp.callback_query_handler(F.data.startswith("user_test:"))
