@@ -8,7 +8,7 @@ from magic_filter import F
 from filters.admins import IsBotAdminFilter
 from handlers.users.start import bot_start
 from keyboards.default.admin_buttons import admin_main_buttons
-from loader import dp, db, udb
+from loader import dp, udb
 from services.db_functions import send_message_to_users, send_media_group_to_users
 from states.admin import AdminStates
 
@@ -45,7 +45,7 @@ async def user_count(message: types.Message):
 
 @dp.message_handler(IsBotAdminFilter(), F.text == "✅ Oddiy post yuborish")
 async def send_to_bot_users(message: types.Message):
-    send_status = await db.get_send_status()
+    send_status = await udb.get_send_status()
     if send_status is True:
         await message.answer(ALERT_TEXT)
     else:
@@ -66,7 +66,7 @@ async def send_to_bot_users_two(message: types.Message, state: FSMContext):
 
 @dp.message_handler(IsBotAdminFilter(), F.text == "🎞 Mediagroup post yuborish")
 async def send_media_to_bot(message: types.Message):
-    send_status = await db.get_send_status()
+    send_status = await udb.get_send_status()
     if send_status is True:
         await message.answer(ALERT_TEXT)
     else:

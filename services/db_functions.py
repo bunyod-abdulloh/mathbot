@@ -8,7 +8,7 @@ from loader import db, bot, udb
 
 async def send_message_to_users(message: types.Message):
     await udb.update_status_true()
-    all_users = await db.select_all_users()
+    all_users = await udb.select_all_users()
     success_count, failed_count = 0, 0
 
     for index, user in enumerate(all_users, start=1):
