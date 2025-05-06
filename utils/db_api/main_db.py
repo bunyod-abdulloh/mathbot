@@ -59,10 +59,10 @@ class Database:
             """
             CREATE TABLE IF NOT EXISTS students (
                 id SERIAL PRIMARY KEY,
+                full_name VARCHAR(255) NULL,
                 user_id BIGINT NULL,
-                book_id INTEGER NULL,
-                question_number INTEGER NULL,
-                answer VARCHAR(10) NULL
+                book_id INTEGER DEFAULT 0,                                
+                point INTEGER DEFAULT 0
             );
             """,
             """

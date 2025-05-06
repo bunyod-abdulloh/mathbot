@@ -3,30 +3,59 @@ from aiogram.dispatcher import FSMContext
 from magic_filter import F
 
 from keyboards.inline.users_ikb import user_main_ikb
-from loader import dp, bks
+from loader import dp, bks, udb, stdb
 from states.users import UserStates
 
 
 @dp.message_handler(F.text == "✅ Javoblarni kiritish", state="*")
 async def handle_user_main(message: types.Message, state: FSMContext):
     await state.finish()
-    books = await bks.get_books()
-    if not books:
-        await message.answer(text="Hozircha testlar mavjud emas!")
+    user_id = int(await udb.select_user(telegram_id=message.from_user.id))
+
+    if user_id:
+        check_student = await stdb.check_student(user_id=user_id)
+        if not check_student:
+            await message.answer(text="Ism familiyangizni kiriting\n\n<b>Namuna: Mardon Mardonov</b>")
+            await state.update_data(student_user_id=user_id)
+            await UserStates.GET_FULLNAME.set()
+        else:
+            books = await bks.get_books()
+            if not books:
+                await message.answer(text="Hozircha testlar mavjud emas!")
+            else:
+                await message.answer(text="Javoblarni yuborish uchun testni tanlang",
+                                     reply_markup=user_main_ikb(books=books))
     else:
-        await message.answer(text="Javoblarni yuborish uchun testni tanlang",
-                             reply_markup=user_main_ikb(books=books))
+        await message.answer(text="Siz foydalanuvchilar ro'yxatida yo'q ekansiz! /start buyrug'ini kiritib botni "
+                                  "qayta ishga tushiring!")
+
+
+@dp.message_handler(state=UserStates.GET_FULLNAME, content_types=types.ContentType.TEXT)
+async def handle_get_fullname(message: types.Message, state: FSMContext):
+    if message.text.isascii():
+        data = await state.get_data()
+        user_id = data.get('student_user_id')
+        full_name = message.text
+        await stdb.add_student(full_name=full_name, user_id=user_id)
+        books = await bks.get_books()
+        if not books:
+            await message.answer(text="Hozircha testlar mavjud emas!")
+        else:
+            await message.answer(text="Javoblarni yuborish uchun testni tanlang",
+                                 reply_markup=user_main_ikb(books=books))
+    else:
+        await message.answer(text="Namunadagidek kiritilishi lozim!")
 
 
 @dp.callback_query_handler(F.data.startswith("user_test:"), state="*")
 async def handle_user_test(call: types.CallbackQuery, state: FSMContext):
     await call.answer(cache_time=0)
     book_id = int(call.data.split(":")[1])
-    await state.update_data(user_book_id=book_id)
+    await state.update_data(student_book_id=book_id)
     book = await bks.get_book_name_file_id(book_id=book_id)
 
     await call.message.answer_document(document=book['file_id'],
-                                       caption=f"Tanlangan test nomi: {book['name']}\n\n"
+                                       caption=f"Test nomi: {book['name']}\n\n"
                                                f"Javoblarni kiriting\n\n(javoblar faqat lotin harflarida kiritilishi "
                                                f"lozim! katta kichikligini ahamiyati yo'q):\n\n"
                                                f"<b>Namuna: abcdabcdabcd</b>")
@@ -36,7 +65,8 @@ async def handle_user_test(call: types.CallbackQuery, state: FSMContext):
 @dp.message_handler(state=UserStates.GET_ANSWERS, content_types=types.ContentType.TEXT)
 async def handle_user_answers(message: types.Message, state: FSMContext):
     data = await state.get_data()
-    book_id = data.get('user_book_id')
+    book_id = data.get('student_book_id')
+    user_id = data.get('student_user_id')
 
     # Ma'lumotlar bazasidan test uchun to'g'ri javoblarni olish
     correct_answers = await bks.get_correct_answers(book_id=book_id)
@@ -67,12 +97,16 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
             result_details += f"    {i}. {user_answer.upper()}  ❌ | ({correct_answer[0].upper()})  ✅"
         if i % 2 == 0:
             result_details += "\n\n"
+    
+    student_points = await stdb.set_student_point(point=correct_count, user_id=user_id)
+
     # Natijani xabar qilish
     await message.answer(
         text=f"<b>{message.from_user.full_name}</b> Siz bergan javoblar qabul qilindi.\n\nNatijangiz quyidagicha:\n\n"
              f"To'g'ri javoblar: {correct_count} ta\n"
              f"Noto'g'ri javoblar: {incorrect_count} ta\n\n"
-             f"Javoblar tahlili:\n\n{result_details}"
+             f"Javoblar tahlili:\n\n{result_details}\n"
+             f"Jami to'plagan ballingiz: {student_points}"
     )
 
     # Natijani ma'lumotlar bazasiga saqlash (ixtiyoriy)

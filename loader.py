@@ -3,7 +3,7 @@ from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
 from data import config
 from utils.db_api.books import BooksDB
-from utils.db_api.main import Database
+from utils.db_api.main_db import Database
 from utils.db_api.students import StudentsDB
 from utils.db_api.users_admins import UsersAdminsDB
 
