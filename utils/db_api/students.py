@@ -5,6 +5,10 @@ class StudentsDB:
     def __init__(self, db: Database):
         self.db = db
 
+    async def add_student(self, user_id):
+        sql = """ INSERT INTO students (user_id) VALUES($1) """
+        await self.db.execute(sql, user_id, execute=True)
+
     async def add_example(self, full_name, user_id, correct, incorrect):
         sql = """ INSERT INTO students (full_name, user_id, correct, incorrect) VALUES($1, $2, $3 $4) """
         await self.db.execute(sql, full_name, user_id, correct, incorrect, execute=True)

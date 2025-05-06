@@ -10,12 +10,11 @@ from states.users import UserStates
 @dp.message_handler(F.text == "✅ Javoblarni kiritish", state="*")
 async def handle_user_main(message: types.Message, state: FSMContext):
     await state.finish()
-    user_id = int(await udb.select_user(telegram_id=message.from_user.id))
+    user_id = await udb.select_user(telegram_id=message.from_user.id)
 
     await state.update_data(student_user_id=user_id)
     if user_id:
         check_student = await stdb.check_student(user_id=user_id)
-        print(check_student)
         if not check_student:
             await message.answer(text="Ism familiyangizni kiriting\n\n<b>Namuna: Mardon Mardonov</b>")
             await UserStates.GET_FULLNAME.set()
@@ -44,6 +43,7 @@ async def handle_get_fullname(message: types.Message, state: FSMContext):
         else:
             await message.answer(text="Javoblarni yuborish uchun testni tanlang",
                                  reply_markup=user_main_ikb(books=books))
+        await stdb.add_student(user_id=user_id)
     else:
         await message.answer(text="Namunadagidek kiritilishi lozim!")
 
@@ -86,59 +86,81 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
     # Javoblarni taqqoslash va natijani hisoblash
     correct_count = 0
     incorrect_count = 0
-    result_details = ""
 
-    # for i, (user_answer, correct_answer) in enumerate(zip(user_answers, correct_answers), 1):
-    #
-    #     if user_answer == correct_answer[0]:
-    #         correct_count += 1
-    #         result_details += f"{i}. {user_answer.upper()}  ✅   "
-    #     else:
-    #         incorrect_count += 1
-    #         result_details += f"{i}. {user_answer.upper()}  ❌ | ({correct_answer[0].upper()})  ✅    "
-    #     if i % 2 == 0:
-    #         result_details += "\n\n"
-
-    # Ikkita ustunli formatda tahlil tuzish
+    # Ikkita ustunli formatda tahlil tuzish - monospace formatda aniqroq ustunlash
     lines = []
-    half = (len(correct_answers) + 1) // 2  # Agar toq bo‘lsa, chap ustun uzunroq bo‘ladi
+    half = (len(correct_answers) + 1) // 2
 
+    correct_count = 0
+    incorrect_count = 0
+
+    # Chap va o‘ng ustunlarni alohida shakllantirish
+    left_column = []
+    right_column = []
+    in_correct = []
+
+    # Chap ustun
     for i in range(half):
-        left_index = i
-        right_index = i + half
-
-        # Chap ustun
-        user_answer_left = user_answers[left_index]
-        correct_left = correct_answers[left_index][0]
-        if user_answer_left == correct_left:
-            left_result = f"{left_index + 1}. {user_answer_left.upper()} ✅"
+        user_answer = user_answers[i]
+        correct = correct_answers[i][0]
+        if user_answer == correct:
+            result = f"{i + 1:02d}. {user_answer.upper()} ✅"
+            correct_count += 1
         else:
-            left_result = f"{left_index + 1}. {user_answer_left.upper()} ❌ | ({correct_left.upper()}) ✅"
+            result = f"{i + 1:02d}. {user_answer.upper()} ❌"
+            in_correct.append(f"{i + 1:02d}. {user_answer.upper()} ❌ | ({correct.upper()}) ✅")
+            incorrect_count += 1
+        left_column.append(result)
 
-        # O‘ng ustun (agar mavjud bo‘lsa)
-        if right_index < len(correct_answers):
-            user_answer_right = user_answers[right_index]
-            correct_right = correct_answers[right_index][0]
-            if user_answer_right == correct_right:
-                right_result = f"{right_index + 1}. {user_answer_right.upper()} ✅"
-            else:
-                right_result = f"{right_index + 1}. {user_answer_right.upper()} ❌ | ({correct_right.upper()}) ✅"
-            line = f"{left_result:<20} {right_result}"
+    # O‘ng ustun
+    for i in range(half, len(correct_answers)):
+        user_answer = user_answers[i]
+        correct = correct_answers[i][0]
+        if user_answer == correct:
+            result = f"{i + 1:02d}. {user_answer.upper()} ✅"
+            correct_count += 1
         else:
-            line = left_result  # Faqat chap ustun
+            result = f"{i + 1:02d}. {user_answer.upper()} ❌"
+            in_correct.append(f"{i + 1:02d}. {user_answer.upper()} ❌ | ({correct.upper()}) ✅")
+            incorrect_count += 1
+        right_column.append(result)
 
+    # Natijalar jadvalini shakllantirish - monospace shrift uchun
+    max_left_length = max(len(item) for item in left_column) + 20
+
+    # Jadvalni shakllantirish
+    for i in range(len(left_column)):
+        left_item = left_column[i]
+        right_item = right_column[i] if i < len(right_column) else ""
+        line = f"{left_item}{' ' * (max_left_length - len(left_item))}{right_item}"
         lines.append(line)
 
+    # Noto'g'ri javoblarni bitta ustunda joylashtirish
+    in_correct_lines = []
+    for i in range(len(in_correct)):
+        in_correct_lines.append(f"{in_correct[i]}")
+
+    # Yangi formatda xabarni yuborish
     result_details = "\n\n".join(lines)
+    incorrect_text = "Javoblarga izoh:\n\n<blockquote>" + "\n\n".join(
+        in_correct_lines) + "</blockquote>" if in_correct else ""
+
     await stdb.set_student_point(correct=correct_count, incorrect=incorrect_count, book_id=book_id, user_id=user_id)
     all_points = await stdb.sum_points(user_id=user_id)
+    full_name = await udb.get_full_name(user_id=user_id)
+    text = str()
 
-    # Natijani xabar qilish
+    if in_correct:
+        text += f"{incorrect_text}\n\n"
+    text += f"Jami to'plagan ballingiz: {all_points}"
+
     await message.answer(
-        text=f"<b>{message.from_user.full_name}</b> Siz bergan javoblar qabul qilindi.\n\nNatijangiz quyidagicha:\n\n"
+        text=f"<b>{full_name}</b> javoblaringiz qabul qilindi.\n\n"
+             f"Natijangiz quyidagicha:\n\n"
              f"To'g'ri javoblar: {correct_count} ta\n"
              f"Noto'g'ri javoblar: {incorrect_count} ta\n\n"
-             f"Javoblar tahlili:\n\n{result_details}\n\n"
-             f"Jami to'plagan ballingiz: {all_points}"
+             f"<blockquote>{result_details}</blockquote>\n\n"
+             f"{text}",
+        parse_mode="HTML"
     )
     await state.finish()
