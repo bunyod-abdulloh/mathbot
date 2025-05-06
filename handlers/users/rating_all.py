@@ -2,16 +2,17 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from magic_filter import F
 
-from keyboards.inline.users_ikb import key_returner
-from loader import dp, stdb, bot
-from services.functions import extracter, process_results_page
+from loader import dp, stdb
+from services.functions import process_results_page
 
 
 @dp.message_handler(F.text == "🤗 Umumiy", state="*")
 async def handle_rating_all(message: types.Message, state: FSMContext):
-    await state.finish()
-    all_students = await stdb.get_all_rating()
-    print(all_students)
+    await message.answer(text="Bo'lim ishga tushmadi!")
+
+    # await state.finish()
+    # all_students = await stdb.get_all_rating()
+    # print(all_students)
 
     # extract = extracter(datas=all_students, delimiter=50)
     #
