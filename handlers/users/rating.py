@@ -18,12 +18,6 @@ async def handle_rating(message: types.Message, state: FSMContext):
     await message.answer(text=message.text, reply_markup=results_dkb)
 
 
-@dp.message_handler(F.text == "🤗 Umumiy", state="*")
-async def handle_rating_all(message: types.Message, state: FSMContext):
-    await state.finish()
-    await message.answer(text="Bo'lim hozircha ishga tushmadi")
-
-
 @dp.message_handler(F.text == "😎 Shaxsiy", state="*")
 async def handle_rating_private(message: types.Message, state: FSMContext):
     await state.finish()

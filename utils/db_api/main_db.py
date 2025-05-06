@@ -36,7 +36,8 @@ class Database:
             """
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
-                telegram_id BIGINT NOT NULL UNIQUE                                                    
+                telegram_id BIGINT NOT NULL UNIQUE,
+                full_name VARCHAR(255) NULL                                                    
             );
             """,
             """
@@ -58,8 +59,7 @@ class Database:
             """
             """
             CREATE TABLE IF NOT EXISTS students (
-                id SERIAL PRIMARY KEY,
-                full_name VARCHAR(255) NULL,
+                id SERIAL PRIMARY KEY,                
                 user_id BIGINT NULL,
                 book_id INTEGER DEFAULT 0,                                
                 correct INTEGER DEFAULT 0,

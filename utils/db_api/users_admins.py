@@ -11,7 +11,7 @@ class UsersAdminsDB:
         await self.db.execute(sql, telegram_id, execute=True)
 
     async def select_user(self, telegram_id):
-        sql = "SELECT * FROM users WHERE telegram_id = $1"
+        sql = "SELECT id FROM users WHERE telegram_id = $1"
         return await self.db.execute(sql, telegram_id, fetchval=True)
 
     async def select_all_users(self):
