@@ -11,12 +11,11 @@ from states.users import UserStates
 async def handle_user_main(message: types.Message, state: FSMContext):
     await state.finish()
     user_id = int(await udb.select_user(telegram_id=message.from_user.id))
-
+    await state.update_data(student_user_id=user_id)
     if user_id:
         check_student = await stdb.check_student(user_id=user_id)
         if not check_student:
             await message.answer(text="Ism familiyangizni kiriting\n\n<b>Namuna: Mardon Mardonov</b>")
-            await state.update_data(student_user_id=user_id)
             await UserStates.GET_FULLNAME.set()
         else:
             books = await bks.get_books()
@@ -91,14 +90,15 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
 
         if user_answer == correct_answer[0]:
             correct_count += 1
-            result_details += f"    {i}. {user_answer.upper()}  ✅"
+            result_details += f"{i}. {user_answer.upper()}  ✅   "
         else:
             incorrect_count += 1
-            result_details += f"    {i}. {user_answer.upper()}  ❌ | ({correct_answer[0].upper()})  ✅"
+            result_details += f"{i}. {user_answer.upper()}  ❌ | ({correct_answer[0].upper()})  ✅    "
         if i % 2 == 0:
             result_details += "\n\n"
-    
-    student_points = await stdb.set_student_point(point=correct_count, user_id=user_id)
+
+    await stdb.set_student_point(correct=correct_count, incorrect=incorrect_count, book_id=book_id, user_id=user_id)
+    all_points = await stdb.sum_points(user_id=user_id)
 
     # Natijani xabar qilish
     await message.answer(
@@ -106,14 +106,6 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
              f"To'g'ri javoblar: {correct_count} ta\n"
              f"Noto'g'ri javoblar: {incorrect_count} ta\n\n"
              f"Javoblar tahlili:\n\n{result_details}\n"
-             f"Jami to'plagan ballingiz: {student_points}"
+             f"Jami to'plagan ballingiz: {all_points}"
     )
-
-    # Natijani ma'lumotlar bazasiga saqlash (ixtiyoriy)
-    # await bks.save_user_test_result(user_id=message.from_user.id, book_id=book_id,
-    #                                correct=correct_count, incorrect=incorrect_count)
-
-    # Keyingi holatga o'tkazish yoki joriy holatni tugatish
     await state.finish()
-    # Yoki keyingi holatga o'tish
-    # await UserStates.NEXT_STATE.set()

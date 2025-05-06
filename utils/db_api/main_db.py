@@ -62,7 +62,8 @@ class Database:
                 full_name VARCHAR(255) NULL,
                 user_id BIGINT NULL,
                 book_id INTEGER DEFAULT 0,                                
-                point INTEGER DEFAULT 0
+                correct INTEGER DEFAULT 0,
+                incorrect INTEGER DEFAULT 0
             );
             """,
             """
