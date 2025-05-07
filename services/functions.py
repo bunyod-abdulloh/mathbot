@@ -1,7 +1,7 @@
 from aiogram import types
 
 from keyboards.inline.users_ikb import key_returner
-from loader import bot, stdb
+from loader import stdb
 
 
 def extracter(datas, delimiter):
@@ -11,28 +11,21 @@ def extracter(datas, delimiter):
     return empty_list
 
 
-async def send_results_page(call: types.CallbackQuery, current_page, all_pages, extract_datas):
+async def send_results_page(call: types.CallbackQuery, current_page, all_pages, extract_datas, your_result):
+    await call.answer(cache_time=0)
     try:
-        extract = extracter(datas=extract_datas, delimiter=50)
-
-        current_datas = extract[current_page] - 1
-
         result = str()
-        your_result = "Siz to'plagan ball: "
-        for student in current_datas:
-            full_name = (await bot.get_chat(chat_id=student['telegram_id'])).full_name
-            result += f"{student['row_num']}. {full_name} - {student['total_correct']} ball\n"
-            if student['telegram_id'] == call.from_user.id:
-                your_result += f"{student['total_correct']} ball"
-        await call.message.edit_text(text=f"Umumiy natija:\n\n{result}\n{your_result}",
-                                     reply_markup=key_returner(current_page=current_page, all_pages=all_pages))
+        for student in extract_datas:
+            result += f"{student['row_num']}. {student['full_name']} - {student['total_correct']} ball\n"
+        await call.message.edit_text(text=f"Umumiy natija:\n\n{result}\nSiz to'plagan ball: {your_result} ball",
+                                     reply_markup=key_returner(current_page=current_page, all_pages=all_pages,
+                                                               your_result=your_result))
         await call.answer(cache_time=0)
-
     except Exception as err:
         await call.answer(text=f"Xatolik: {err}", show_alert=True)
 
 
-async def process_results_page(call: types.CallbackQuery, direction: str):
+async def process_results_page(call: types.CallbackQuery, direction: str, your_result):
     all_students = await stdb.get_all_rating()
 
     extract = extracter(datas=all_students, delimiter=50)
@@ -46,4 +39,5 @@ async def process_results_page(call: types.CallbackQuery, direction: str):
 
     extracted_datas = extract[current_page - 1]
 
-    await send_results_page(call=call, current_page=current_page, all_pages=all_pages, extract_datas=extracted_datas)
+    await send_results_page(call=call, current_page=current_page, all_pages=all_pages, extract_datas=extracted_datas,
+                            your_result=your_result)

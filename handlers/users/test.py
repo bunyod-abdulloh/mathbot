@@ -83,10 +83,6 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
                  f"Siz yuborgan javoblar soni: {len(user_answers)} ta\n\nJavoblarni qayta yuboring")
         return
 
-    # Javoblarni taqqoslash va natijani hisoblash
-    correct_count = 0
-    incorrect_count = 0
-
     # Ikkita ustunli formatda tahlil tuzish - monospace formatda aniqroq ustunlash
     lines = []
     half = (len(correct_answers) + 1) // 2
@@ -142,7 +138,7 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
 
     # Yangi formatda xabarni yuborish
     result_details = "\n\n".join(lines)
-    incorrect_text = "Javoblarga izoh:\n\n<blockquote>" + "\n\n".join(
+    incorrect_text = "Javoblarga izoh:\n\n<blockquote expandable>" + "\n\n".join(
         in_correct_lines) + "</blockquote>" if in_correct else ""
 
     await stdb.set_student_point(correct=correct_count, incorrect=incorrect_count, book_id=book_id, user_id=user_id)

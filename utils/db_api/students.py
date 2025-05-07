@@ -9,9 +9,9 @@ class StudentsDB:
         sql = """ INSERT INTO students (user_id) VALUES($1) """
         await self.db.execute(sql, user_id, execute=True)
 
-    async def add_example(self, full_name, user_id, correct, incorrect):
-        sql = """ INSERT INTO students (full_name, user_id, correct, incorrect) VALUES($1, $2, $3 $4) """
-        await self.db.execute(sql, full_name, user_id, correct, incorrect, execute=True)
+    async def add_example(self, user_id, correct, incorrect):
+        sql = """ INSERT INTO students (user_id, correct, incorrect) VALUES($1, $2, $3) """
+        await self.db.execute(sql, user_id, correct, incorrect, execute=True)
 
 
     async def check_student(self, user_id):
@@ -30,13 +30,13 @@ class StudentsDB:
         sql = """
             SELECT 
                 ROW_NUMBER() OVER (ORDER BY SUM(s.correct) DESC) AS row_num,
-                s.user_id,
+                u.telegram_id,
                 u.full_name,
                 SUM(s.correct) AS total_correct
             FROM students s
             JOIN users u ON s.user_id = u.id
             WHERE s.user_id IS NOT NULL
-            GROUP BY s.user_id, u.full_name
+            GROUP BY s.user_id, u.full_name, u.telegram_id 
             ORDER BY total_correct DESC
         """
         return await self.db.execute(sql, fetch=True)
