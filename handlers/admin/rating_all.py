@@ -22,7 +22,7 @@ async def handle_admin_all_ratings(message: types.Message, state: FSMContext):
         your_result = str()
         for student in extract[0]:
             result += f"🌟 {student['row_num']}. {student['full_name']} - {student['total_correct']} ball\n"
-        await message.answer(text=f"📊 Umumiy natija:\n\n{result}",
+        await message.answer(text=f"🏁 Umumiy natija:\n\n{result}",
                              reply_markup=key_returner(current_page=current_page, all_pages=all_pages,
                                                        your_result=your_result))
     except IndexError:

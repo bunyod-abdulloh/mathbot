@@ -22,7 +22,7 @@ async def send_results_page(call: types.CallbackQuery, current_page, all_pages, 
                                          reply_markup=key_returner(current_page=current_page, all_pages=all_pages,
                                                                    your_result=your_result))
         else:
-            await call.message.edit_text(text=f"Umumiy natija:\n\n{result}",
+            await call.message.edit_text(text=f"🏁 Umumiy natija:\n\n{result}",
                                          reply_markup=key_returner(current_page=current_page, all_pages=all_pages,
                                                                    your_result=your_result))
     except Exception as err:
