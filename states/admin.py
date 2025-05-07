@@ -7,3 +7,4 @@ class AdminStates(StatesGroup):
     ADD_BOOK = State()
     ADD_BOOK_PDF = State()
     ADD_TEXT_KEYS = State()
+    GET_FULL_NAME = State()

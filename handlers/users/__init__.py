@@ -1,3 +1,3 @@
-from . import rating_all
+from . import rating
 from . import start
 from . import test
