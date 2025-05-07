@@ -16,9 +16,9 @@ async def send_results_page(call: types.CallbackQuery, current_page, all_pages, 
     try:
         result = str()
         for student in extract_datas:
-            result += f"{student['row_num']}. {student['full_name']} - {student['total_correct']} ball\n"
+            result += f"🌟 {student['row_num']}. {student['full_name']} - {student['total_correct']} ball\n"
         if your_result:
-            await call.message.edit_text(text=f"Umumiy natija:\n\n{result}\nSiz to'plagan ball: {your_result} ball",
+            await call.message.edit_text(text=f"🏁 Umumiy natija:\n\n{result}\n📌 Siz to'plagan ball: {your_result} ball",
                                          reply_markup=key_returner(current_page=current_page, all_pages=all_pages,
                                                                    your_result=your_result))
         else:

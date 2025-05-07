@@ -38,6 +38,7 @@ async def handle_get_fullname(message: types.Message, state: FSMContext):
         full_name = message.text
         await udb.set_full_name(full_name=full_name, user_id=user_id)
         books = await bks.get_books()
+        print(books)
         if not books:
             await message.answer(text="Hozircha testlar mavjud emas!")
         else:
@@ -104,7 +105,7 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
             correct_count += 1
         else:
             result = f"{i + 1:02d}. {user_answer.upper()} ❌"
-            in_correct.append(f"{i + 1:02d}. {user_answer.upper()} ❌ | ({correct.upper()}) ✅")
+            in_correct.append(f"{i + 1:02d}. {user_answer.upper()} ❌ | To'g'ri javob {correct.upper()} ✅")
             incorrect_count += 1
         left_column.append(result)
 
@@ -117,7 +118,7 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
             correct_count += 1
         else:
             result = f"{i + 1:02d}. {user_answer.upper()} ❌"
-            in_correct.append(f"{i + 1:02d}. {user_answer.upper()} ❌ | ({correct.upper()}) ✅")
+            in_correct.append(f"{i + 1:02d}. {user_answer.upper()} ❌ | To'g'ri javob {correct.upper()} ✅")
             incorrect_count += 1
         right_column.append(result)
 
@@ -138,7 +139,7 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
 
     # Yangi formatda xabarni yuborish
     result_details = "\n\n".join(lines)
-    incorrect_text = "Javoblarga izoh:\n\n<blockquote expandable>" + "\n\n".join(
+    incorrect_text = "📝 Izoh:\n <blockquote expandable>" + "\n\n".join(
         in_correct_lines) + "</blockquote>" if in_correct else ""
 
     await stdb.set_student_point(correct=correct_count, incorrect=incorrect_count, book_id=book_id, user_id=user_id)
@@ -148,14 +149,14 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
 
     if in_correct:
         text += f"{incorrect_text}\n\n"
-    text += f"Jami to'plagan ballingiz: {all_points}"
 
     await message.answer(
-        text=f"<b>{full_name}</b> javoblaringiz qabul qilindi.\n\n"
-             f"Natijangiz quyidagicha:\n\n"
-             f"To'g'ri javoblar: {correct_count} ta\n"
-             f"Noto'g'ri javoblar: {incorrect_count} ta\n\n"
-             f"<blockquote>{result_details}</blockquote>\n\n"
+        text=f"👤 <b>{full_name}</b>\n📩 Javoblaringiz qabul qilindi.\n\n"
+             f"📊 Natijangiz::\n\n"
+             f"✅ To‘g‘ri javoblar: {correct_count} ta\n"
+             f"❌ Noto‘g‘ri javoblar: {incorrect_count} ta\n"
+             f"🎯 Jami ball: {all_points}\n\n"
+             f"📋 Javoblar:\n <blockquote>{result_details}</blockquote>\n\n"
              f"{text}",
         parse_mode="HTML"
     )

@@ -40,3 +40,10 @@ class StudentsDB:
             ORDER BY total_correct DESC
         """
         return await self.db.execute(sql, fetch=True)
+
+    async def get_student_rating_by_fullname(self, full_name):
+        sql = """ SELECT b.name,  s.correct, s.incorrect FROM students s 
+                    LEFT JOIN users u ON s.user_id = u.id 
+                    LEFT JOIN books b ON s.book_id = b.id 
+                    WHERE u.full_name = $1 """
+        return await self.db.execute(sql, full_name, fetch=True)

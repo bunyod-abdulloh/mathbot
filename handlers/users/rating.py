@@ -21,10 +21,10 @@ async def handle_rating_all(message: types.Message, state: FSMContext):
         result = str()
         your_result = str()
         for student in extract[0]:
-            result += f"{student['row_num']}. {student['full_name']} - {student['total_correct']} ball\n"
+            result += f"🌟 {student['row_num']}. {student['full_name']} - {student['total_correct']} ball\n"
             if student['telegram_id'] == message.from_user.id:
                 your_result = student['total_correct']
-        await message.answer(text=f"Umumiy natija:\n\n{result}\nSiz to'plagan ball: {your_result} ball",
+        await message.answer(text=f"🏁 Umumiy natija:\n\n{result}\n📌 Siz to'plagan ball: {your_result} ball",
                              reply_markup=key_returner(current_page=current_page, all_pages=all_pages,
                                                        your_result=your_result))
     except IndexError:

@@ -21,6 +21,11 @@ WARNING_TEXT = (
 ALERT_TEXT = "Xabar yuborish jarayoni yoqilgan! Hisobot kelganidan so'ng xabar yuborishingiz mumkin!"
 
 
+@dp.message_handler(IsBotAdminFilter(), F.text == "🔙 Ortga", state="*")
+async def handle_admin_back(message: types.Message, state: FSMContext):
+    await admin_main_page(message=message, state=state)
+
+
 @dp.message_handler(IsBotAdminFilter(), Command(commands="admin"), state="*")
 async def admin_main_page(message: types.Message, state: FSMContext):
     await state.finish()
