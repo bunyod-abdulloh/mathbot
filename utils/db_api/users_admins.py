@@ -20,8 +20,8 @@ class UsersAdminsDB:
 
 
     async def select_user(self, telegram_id):
-        sql = "SELECT id FROM users WHERE telegram_id = $1"
-        return await self.db.execute(sql, telegram_id, fetchval=True)
+        sql = "SELECT id, full_name FROM users WHERE telegram_id = $1"
+        return await self.db.execute(sql, telegram_id, fetch=True)
 
     async def get_full_name(self, user_id):
         sql = """ SELECT full_name FROM users WHERE id = $1 """

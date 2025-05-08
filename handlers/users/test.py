@@ -4,7 +4,7 @@ from magic_filter import F
 
 from keyboards.inline.users_ikb import user_main_ikb
 from loader import dp, bks, udb, stdb
-from services.functions import answer_text, no_test_text, user_not_found_text, enter_full_name_text, test_input_prompt, \
+from services.functions import answer_text, no_test_text, enter_full_name_text, test_input_prompt, \
     incomplete_answers_text
 from states.users import UserStates
 
@@ -12,22 +12,22 @@ from states.users import UserStates
 @dp.message_handler(F.text == "✅ Javoblarni kiritish", state="*")
 async def handle_user_main(message: types.Message, state: FSMContext):
     await state.finish()
-    user_id = await udb.select_user(telegram_id=message.from_user.id)
+    user = await udb.select_user(telegram_id=message.from_user.id)
 
-    await state.update_data(student_user_id=user_id)
-    if user_id:
-        check_student = await stdb.check_student(user_id=user_id)
-        if not check_student:
-            await message.answer(text=enter_full_name_text)
-            await UserStates.GET_FULLNAME.set()
+    if user['full_name']:
+        await state.update_data(student_user_id=user['id'])
+        # check_student = await stdb.check_student(user_id=user_id)
+        # if not check_student:
+        #
+        # else:
+        books = await bks.get_books()
+        if not books:
+            await message.answer(text=no_test_text)
         else:
-            books = await bks.get_books()
-            if not books:
-                await message.answer(text=no_test_text)
-            else:
-                await message.answer(text=answer_text, reply_markup=user_main_ikb(books=books))
+            await message.answer(text=answer_text, reply_markup=user_main_ikb(books=books))
     else:
-        await message.answer(text=user_not_found_text)
+        await message.answer(text=enter_full_name_text)
+        await UserStates.GET_FULLNAME.set()
 
 
 @dp.message_handler(state=UserStates.GET_FULLNAME, content_types=types.ContentType.TEXT)
