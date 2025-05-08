@@ -5,7 +5,7 @@ from magic_filter import F
 from keyboards.inline.users_ikb import user_main_ikb
 from loader import dp, bks, udb, stdb
 from services.functions import answer_text, no_test_text, enter_full_name_text, test_input_prompt, \
-    incomplete_answers_text
+    incomplete_answers_text, user_not_found_text
 from states.users import UserStates
 
 
@@ -14,20 +14,20 @@ async def handle_user_main(message: types.Message, state: FSMContext):
     await state.finish()
     user = await udb.select_user(telegram_id=message.from_user.id)
 
-    if user['full_name']:
+    if user:
         await state.update_data(student_user_id=user['id'])
-        # check_student = await stdb.check_student(user_id=user_id)
-        # if not check_student:
-        #
-        # else:
-        books = await bks.get_books()
-        if not books:
-            await message.answer(text=no_test_text)
+
+        if user['full_name']:
+            books = await bks.get_books()
+            if not books:
+                await message.answer(text=no_test_text)
+            else:
+                await message.answer(text=answer_text, reply_markup=user_main_ikb(books=books))
         else:
-            await message.answer(text=answer_text, reply_markup=user_main_ikb(books=books))
+            await message.answer(text=enter_full_name_text)
+            await UserStates.GET_FULLNAME.set()
     else:
-        await message.answer(text=enter_full_name_text)
-        await UserStates.GET_FULLNAME.set()
+        await message.answer(text=user_not_found_text)
 
 
 @dp.message_handler(state=UserStates.GET_FULLNAME, content_types=types.ContentType.TEXT)
@@ -43,7 +43,6 @@ async def handle_get_fullname(message: types.Message, state: FSMContext):
             await message.answer(text=no_test_text)
         else:
             await message.answer(text=answer_text, reply_markup=user_main_ikb(books=books))
-        await stdb.add_student(user_id=user_id)
     else:
         await message.answer(text="⚠️ <b>Ma'lumot noto‘g‘ri kiritildi!</b>\n\n"
                                   "📝 Iltimos, ma'lumotni <b>namunadagidek</b> kiriting\n")
