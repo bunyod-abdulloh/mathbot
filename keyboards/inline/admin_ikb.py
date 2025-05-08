@@ -23,7 +23,7 @@ def admin_del_tests(tests):
 
 
 def admin_clear_rating_ikb():
-    btn = InlineKeyboardMarkup(row_width=1)
-    btn.add(InlineKeyboardButton(text="Yo'q", callback_data="admin_no"),
-            InlineKeyboardButton(text="Ha", callback_data="admin_yes"))
+    btn = InlineKeyboardMarkup(row_width=2)
+    btn.add(InlineKeyboardButton(text="❌ Yo'q", callback_data="admin_no"),
+            InlineKeyboardButton(text="✅ Ha", callback_data="admin_yes"))
     return btn
