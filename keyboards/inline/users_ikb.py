@@ -8,12 +8,12 @@ def user_main_ikb(books):
     return btn
 
 
-def key_returner(current_page, all_pages, your_result):
+def key_returner(current_page, all_pages):
     keys = InlineKeyboardMarkup(row_width=3)
     keys.row(
         InlineKeyboardButton(
             text="◀️",
-            callback_data=f"prev_all:{current_page}:{your_result}"
+            callback_data=f"prev_all:{current_page}"
         ),
         InlineKeyboardButton(
             text=f"{current_page}/{all_pages}",
@@ -21,7 +21,7 @@ def key_returner(current_page, all_pages, your_result):
         ),
         InlineKeyboardButton(
             text="▶️",
-            callback_data=f"next_all:{current_page}:{your_result}"
+            callback_data=f"next_all:{current_page}"
         )
     )
     return keys

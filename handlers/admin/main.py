@@ -7,23 +7,18 @@ from magic_filter import F
 
 from filters.admins import IsBotAdminFilter
 from handlers.users.start import bot_start
-from keyboards.default.admin_buttons import admin_main_buttons, admin_rating_dkb
+from keyboards.default.admin_buttons import admin_main_buttons
 from loader import dp, udb
 from services.db_functions import send_message_to_users, send_media_group_to_users
 from states.admin import AdminStates
 
 WARNING_TEXT = (
-    "Habar yuborishdan oldin postingizni yaxshilab tekshirib oling!\n\n"
+    "Xabar yuborishdan oldin postingizni yaxshilab tekshirib oling!\n\n"
     "Imkoni bo'lsa postingizni oldin tayyorlab olib keyin yuboring.\n\n"
     "Habaringizni kiriting:"
 )
 
 ALERT_TEXT = "Xabar yuborish jarayoni yoqilgan! Hisobot kelganidan so'ng xabar yuborishingiz mumkin!"
-
-
-@dp.message_handler(IsBotAdminFilter(), F.text == "🔙 Ortga", state="*")
-async def handle_admin_back(message: types.Message, state: FSMContext):
-    await admin_main_page(message=message, state=state)
 
 
 @dp.message_handler(IsBotAdminFilter(), Command(commands="admin"), state="*")
@@ -101,9 +96,3 @@ async def send_media_to_bot_second(message: types.Message, album: List[types.Mes
     await message.answer(
         f"Media {success_count} ta foydalanuvchiga yuborildi!\n{failed_count} ta foydalanuvchi botni bloklagan."
     )
-
-
-@dp.message_handler(F.text == "📊 Natijalarni ko'rish", state="*")
-async def handle_admin_view_ratings(message: types.Message, state: FSMContext):
-    await state.finish()
-    await message.answer(text=message.text, reply_markup=admin_rating_dkb)

@@ -45,8 +45,13 @@ class StudentsDB:
         return await self.db.execute(sql, fetch=True)
 
     async def get_today_ratings(self):
-        sql = """ SELECT u.full_name, s.correct, s.incorrect FROM students s 
-                    LEFT JOIN users u ON s.user_id = u.id WHERE created_at = CURRENT_DATE """
+        sql = """
+            SELECT DISTINCT ON (s.id) u.full_name, b.name, s.correct, s.incorrect
+            FROM students s
+            LEFT JOIN users u ON s.user_id = u.id  
+            LEFT JOIN books b ON s.book_id = b.book_id 
+            WHERE s.created_at = CURRENT_DATE
+        """
         return await self.db.execute(sql, fetch=True)
 
     async def get_student_rating_by_fullname(self, full_name):
@@ -59,3 +64,15 @@ class StudentsDB:
     async def check_book_by_id(self, book_id, user_id):
         sql = """ SELECT EXISTS (SELECT 1 FROM students WHERE book_id = $1 AND user_id = $2) """
         return await self.db.execute(sql, book_id, user_id, fetchval=True)
+
+    async def clear_table_students(self):
+        await self.db.execute("""DELETE FROM students WHERE created_at != CURRENT_DATE""", execute=True)
+
+    async def delete_user_by_fullname(self, full_name):
+        sql = """ DELETE FROM students WHERE full_name = $1 """
+        result = await self.db.execute(sql, full_name, execute=True)
+
+        # 'DELETE 1', 'DELETE 0', va hokazo bo'ladi
+        deleted_count = int(result.split(" ")[1])
+
+        return deleted_count > 0  # True bo‘lsa — o‘chirildi, False bo‘lsa — topilmadi
