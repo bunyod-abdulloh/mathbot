@@ -39,6 +39,15 @@ class UsersAdminsDB:
         sql = "DELETE FROM users WHERE telegram_id = $1"
         return await self.db.execute(sql, telegram_id, execute=True)
 
+    async def delete_user_by_fullname(self, full_name):
+        sql = """ DELETE FROM users WHERE full_name = $1 """
+        result = await self.db.execute(sql, full_name, execute=True)
+
+        # 'DELETE 1', 'DELETE 0', va hokazo bo'ladi
+        deleted_count = int(result.split(" ")[1])
+
+        return deleted_count > 0  # True bo‘lsa — o‘chirildi, False bo‘lsa — topilmadi
+
     async def drop_table_users(self):
         sql = "DROP TABLE users"
         return await self.db.execute(sql, execute=True)

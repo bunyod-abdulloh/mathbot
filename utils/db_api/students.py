@@ -67,12 +67,3 @@ class StudentsDB:
 
     async def clear_table_students(self):
         await self.db.execute("""DELETE FROM students WHERE created_at != CURRENT_DATE""", execute=True)
-
-    async def delete_user_by_fullname(self, full_name):
-        sql = """ DELETE FROM students WHERE full_name = $1 """
-        result = await self.db.execute(sql, full_name, execute=True)
-
-        # 'DELETE 1', 'DELETE 0', va hokazo bo'ladi
-        deleted_count = int(result.split(" ")[1])
-
-        return deleted_count > 0  # True bo‘lsa — o‘chirildi, False bo‘lsa — topilmadi

@@ -59,7 +59,7 @@ class Database:
             """
             CREATE TABLE IF NOT EXISTS students (
                 id SERIAL PRIMARY KEY,                
-                user_id BIGINT NULL,
+                user_id BIGINT NULL REFERENCES users(id) ON DELETE CASCADE,
                 book_id INTEGER DEFAULT 0,                                
                 correct INTEGER DEFAULT 0,
                 incorrect INTEGER DEFAULT 0,
