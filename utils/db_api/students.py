@@ -52,6 +52,6 @@ class StudentsDB:
                     WHERE u.full_name = $1 """
         return await self.db.execute(sql, full_name, fetch=True)
 
-    async def check_book_by_id(self, book_id):
-        sql = """ SELECT EXISTS (SELECT 1 FROM students WHERE book_id = $1) """
-        return await self.db.execute(sql, book_id, fetchval=True)
+    async def check_book_by_id(self, book_id, user_id):
+        sql = """ SELECT EXISTS (SELECT 1 FROM students WHERE book_id = $1 AND user_id = $2) """
+        return await self.db.execute(sql, book_id, user_id, fetchval=True)
