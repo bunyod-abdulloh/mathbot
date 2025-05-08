@@ -46,8 +46,7 @@ class Database:
                 book_id BIGINT NULL,                                
                 name VARCHAR(190) NULL,
                 question_number INTEGER NULL,
-                answer VARCHAR(10) NULL,
-                created_at DATE DEFAULT CURRENT_DATE            
+                answer VARCHAR(10) NULL                            
             );
             """,
             """
@@ -63,7 +62,8 @@ class Database:
                 user_id BIGINT NULL,
                 book_id INTEGER DEFAULT 0,                                
                 correct INTEGER DEFAULT 0,
-                incorrect INTEGER DEFAULT 0
+                incorrect INTEGER DEFAULT 0,
+                created_at DATE DEFAULT CURRENT_DATE
             );
             """,
             """

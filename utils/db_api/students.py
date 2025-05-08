@@ -33,8 +33,7 @@ class StudentsDB:
     async def get_all_rating(self):
         sql = """
             SELECT 
-                ROW_NUMBER() OVER (ORDER BY SUM(s.correct) DESC) AS row_num,
-                u.telegram_id,
+                ROW_NUMBER() OVER (ORDER BY SUM(s.correct) DESC) AS row_num,                
                 u.full_name,
                 SUM(s.correct) AS total_correct
             FROM students s
@@ -43,6 +42,11 @@ class StudentsDB:
             GROUP BY s.user_id, u.full_name, u.telegram_id 
             ORDER BY total_correct DESC
         """
+        return await self.db.execute(sql, fetch=True)
+
+    async def get_today_ratings(self):
+        sql = """ SELECT u.full_name, s.correct, s.incorrect FROM students s 
+                    LEFT JOIN users u ON s.user_id = u.id WHERE created_at = CURRENT_DATE """
         return await self.db.execute(sql, fetch=True)
 
     async def get_student_rating_by_fullname(self, full_name):
