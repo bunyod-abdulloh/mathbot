@@ -45,3 +45,34 @@ async def process_results_page(call: types.CallbackQuery, direction: str, your_r
 
     await send_results_page(call=call, current_page=current_page, all_pages=all_pages, extract_datas=extracted_datas,
                             your_result=your_result)
+
+
+answer_text = "📝 Javoblarni yuborish uchun 📚 testni tanlang:"
+
+no_test_text = ("🚫 <b>Hozircha testlar mavjud emas!</b>\n\n"
+                "📌 Iltimos, keyinroq urinib ko‘ring yoki yangilanishlarni kuting!")
+
+user_not_found_text = (
+    "🚫 <b>Siz foydalanuvchilar ro‘yxatida topilmadingiz!</b>\n\n"
+    "Iltimos, <b>/start</b> buyrug‘ini yuboring va botdan foydalanishni qayta boshlang. ✅"
+)
+
+enter_full_name_text = (
+    "🖊️ <b>Ism familiyangizni kiriting:</b>\n\n"
+    "📌 <i>Namuna:</i> <b>Mardon Mardonov</b>"
+)
+
+test_input_prompt = (
+    f"📘 <b>Test nomi:</b> {book['name']}\n\n"
+    f"✍️ <b>Javoblaringizni kiriting</b>\n\n"
+    f"🔤 Javoblar faqat <b>lotin harflarida</b> bo‘lishi lozim. "
+    f"Katta-kichik harflar ahamiyatga ega emas.\n\n"
+    f"📌 <i>Namuna:</i> <b>abcdabcdabcd</b>"
+)
+
+incomplete_answers_text = (
+    f"⚠️ <b>Siz barcha savollarga javob bermadingiz!</b>\n\n"
+    f"❓ <b>Jami savollar:</b> {len_answers} ta\n"
+    f"✍️ <b>Siz yuborgan javoblar:</b> {len(user_answers)} ta\n\n"
+    f"🔁 Iltimos, barcha javoblarni to‘liq kiriting va qayta yuboring."
+)

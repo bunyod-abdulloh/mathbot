@@ -28,7 +28,7 @@ async def handle_rating_all(message: types.Message, state: FSMContext):
                              reply_markup=key_returner(current_page=current_page, all_pages=all_pages,
                                                        your_result=your_result))
     except IndexError:
-        await message.answer(text="Natijalarni ko'rsatish uchun birorta test javobi yuborilmagan!")
+        await message.answer(text="❗️ <b>Natijalarni ko'rsatish uchun birorta test joylanmagan!</b>")
 
 
 @dp.callback_query_handler(F.data.startswith("alertall:"), state="*")

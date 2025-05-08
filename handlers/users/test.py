@@ -4,6 +4,8 @@ from magic_filter import F
 
 from keyboards.inline.users_ikb import user_main_ikb
 from loader import dp, bks, udb, stdb
+from services.functions import answer_text, no_test_text, user_not_found_text, enter_full_name_text, test_input_prompt, \
+    incomplete_answers_text
 from states.users import UserStates
 
 
@@ -16,18 +18,16 @@ async def handle_user_main(message: types.Message, state: FSMContext):
     if user_id:
         check_student = await stdb.check_student(user_id=user_id)
         if not check_student:
-            await message.answer(text="Ism familiyangizni kiriting\n\n<b>Namuna: Mardon Mardonov</b>")
+            await message.answer(text=enter_full_name_text)
             await UserStates.GET_FULLNAME.set()
         else:
             books = await bks.get_books()
             if not books:
-                await message.answer(text="Hozircha testlar mavjud emas!")
+                await message.answer(text=no_test_text)
             else:
-                await message.answer(text="Javoblarni yuborish uchun testni tanlang",
-                                     reply_markup=user_main_ikb(books=books))
+                await message.answer(text=answer_text, reply_markup=user_main_ikb(books=books))
     else:
-        await message.answer(text="Siz foydalanuvchilar ro'yxatida yo'q ekansiz! /start buyrug'ini kiritib botni "
-                                  "qayta ishga tushiring!")
+        await message.answer(text=user_not_found_text)
 
 
 @dp.message_handler(state=UserStates.GET_FULLNAME, content_types=types.ContentType.TEXT)
@@ -38,15 +38,15 @@ async def handle_get_fullname(message: types.Message, state: FSMContext):
         full_name = message.text
         await udb.set_full_name(full_name=full_name, user_id=user_id)
         books = await bks.get_books()
-        print(books)
+
         if not books:
-            await message.answer(text="Hozircha testlar mavjud emas!")
+            await message.answer(text=no_test_text)
         else:
-            await message.answer(text="Javoblarni yuborish uchun testni tanlang",
-                                 reply_markup=user_main_ikb(books=books))
+            await message.answer(text=answer_text, reply_markup=user_main_ikb(books=books))
         await stdb.add_student(user_id=user_id)
     else:
-        await message.answer(text="Namunadagidek kiritilishi lozim!")
+        await message.answer(text="⚠️ <b>Ma'lumot noto‘g‘ri kiritildi!</b>\n\n"
+                                  "📝 Iltimos, ma'lumotni <b>namunadagidek</b> kiriting\n")
 
 
 @dp.callback_query_handler(F.data.startswith("user_test:"), state="*")
@@ -57,10 +57,7 @@ async def handle_user_test(call: types.CallbackQuery, state: FSMContext):
     book = await bks.get_book_name_file_id(book_id=book_id)
 
     await call.message.answer_document(document=book['file_id'],
-                                       caption=f"Test nomi: {book['name']}\n\n"
-                                               f"Javoblarni kiriting\n\n(javoblar faqat lotin harflarida kiritilishi "
-                                               f"lozim! katta kichikligini ahamiyati yo'q):\n\n"
-                                               f"<b>Namuna: abcdabcdabcd</b>")
+                                       caption=test_input_prompt)
     await UserStates.GET_ANSWERS.set()
 
 
@@ -79,9 +76,7 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
 
     # Javoblar soni tekshiriladi
     if len_answers != len(user_answers):
-        await message.answer(
-            text=f"Siz barcha savollarga javob bermadingiz!\n\nJami savollar soni: {len_answers} ta\n\n"
-                 f"Siz yuborgan javoblar soni: {len(user_answers)} ta\n\nJavoblarni qayta yuboring")
+        await message.answer(text=incomplete_answers_text)
         return
 
     # Ikkita ustunli formatda tahlil tuzish - monospace formatda aniqroq ustunlash
