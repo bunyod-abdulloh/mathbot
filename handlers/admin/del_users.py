@@ -3,7 +3,7 @@ from aiogram.dispatcher import FSMContext
 from magic_filter import F
 
 from filters.admins import IsBotAdminFilter
-from loader import dp, stdb
+from loader import dp, udb
 from states.admin import AdminStates
 
 
