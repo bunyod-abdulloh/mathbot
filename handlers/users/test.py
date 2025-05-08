@@ -57,7 +57,7 @@ async def handle_user_test(call: types.CallbackQuery, state: FSMContext):
     book = await bks.get_book_name_file_id(book_id=book_id)
 
     await call.message.answer_document(document=book['file_id'],
-                                       caption=test_input_prompt)
+                                       caption=test_input_prompt(book))
     await UserStates.GET_ANSWERS.set()
 
 
@@ -76,7 +76,7 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
 
     # Javoblar soni tekshiriladi
     if len_answers != len(user_answers):
-        await message.answer(text=incomplete_answers_text)
+        await message.answer(text=incomplete_answers_text(len_answers=len_answers, user_answers=user_answers))
         return
 
     # Ikkita ustunli formatda tahlil tuzish - monospace formatda aniqroq ustunlash

@@ -62,17 +62,23 @@ enter_full_name_text = (
     "📌 <i>Namuna:</i> <b>Mardon Mardonov</b>"
 )
 
-test_input_prompt = (
-    f"📘 <b>Test nomi:</b> {book['name']}\n\n"
-    f"✍️ <b>Javoblaringizni kiriting</b>\n\n"
-    f"🔤 Javoblar faqat <b>lotin harflarida</b> bo‘lishi lozim. "
-    f"Katta-kichik harflar ahamiyatga ega emas.\n\n"
-    f"📌 <i>Namuna:</i> <b>abcdabcdabcd</b>"
-)
 
-incomplete_answers_text = (
-    f"⚠️ <b>Siz barcha savollarga javob bermadingiz!</b>\n\n"
-    f"❓ <b>Jami savollar:</b> {len_answers} ta\n"
-    f"✍️ <b>Siz yuborgan javoblar:</b> {len(user_answers)} ta\n\n"
-    f"🔁 Iltimos, barcha javoblarni to‘liq kiriting va qayta yuboring."
-)
+def test_input_prompt(book):
+    text = (
+        f"📘 <b>Test nomi:</b> {book['name']}\n\n"
+        f"✍️ <b>Javoblaringizni kiriting</b>\n\n"
+        f"🔤 Javoblar faqat <b>lotin harflarida</b> bo‘lishi lozim. "
+        f"Katta-kichik harflar ahamiyatga ega emas.\n\n"
+        f"📌 <i>Namuna:</i> <b>abcdabcdabcd</b>"
+    )
+    return text
+
+
+def incomplete_answers_text(len_answers, user_answers):
+    text = (
+        f"⚠️ <b>Siz barcha savollarga javob bermadingiz!</b>\n\n"
+        f"❓ <b>Jami savollar:</b> {len_answers} ta\n"
+        f"✍️ <b>Siz yuborgan javoblar:</b> {len(user_answers)} ta\n\n"
+        f"🔁 Iltimos, barcha javoblarni to‘liq kiriting va qayta yuboring."
+    )
+    return text
