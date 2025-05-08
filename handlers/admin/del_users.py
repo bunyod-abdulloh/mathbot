@@ -10,7 +10,7 @@ from states.admin import AdminStates
 @dp.message_handler(IsBotAdminFilter(), F.text == "👤❌ Foydalanuvchini o‘chirish", state="*")
 async def handle_delete_user(message: types.Message, state: FSMContext):
     await state.finish()
-    await message.answer(text="👤 Foydalanuvchi ismini kiriting")
+    await message.answer(text="👤 Foydalanuvchi ismi va familiyasini kiriting")
     await AdminStates.DEL_USER.set()
 
 
