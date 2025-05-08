@@ -20,3 +20,10 @@ def admin_del_tests(tests):
     for test in tests:
         btn.add(InlineKeyboardButton(text=test['name'], callback_data=f"del_test:{test['book_id']}"))
     return btn
+
+
+def admin_clear_rating_ikb():
+    btn = InlineKeyboardMarkup(row_width=1)
+    btn.add(InlineKeyboardButton(text="Yo'q", callback_data="admin_no"),
+            InlineKeyboardButton(text="Ha", callback_data="admin_yes"))
+    return btn
