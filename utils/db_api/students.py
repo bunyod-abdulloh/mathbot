@@ -9,6 +9,10 @@ class StudentsDB:
         sql = """ INSERT INTO students (user_id) VALUES($1) """
         await self.db.execute(sql, user_id, execute=True)
 
+    async def add_student_datas(self, user_id, book_id, correct, incorrect):
+        sql = """ INSERT INTO students (user_id, book_id, correct, incorrect) VALUES ($1, $2, $3, $4) """
+        await self.db.execute(sql, user_id, book_id, correct, incorrect, execute=True)
+
     async def add_example(self, user_id, correct, incorrect):
         sql = """ INSERT INTO students (user_id, correct, incorrect) VALUES($1, $2, $3) """
         await self.db.execute(sql, user_id, correct, incorrect, execute=True)
@@ -19,7 +23,7 @@ class StudentsDB:
         return await self.db.execute(sql, user_id, fetchval=True)
 
     async def set_student_point(self, correct, incorrect, book_id, user_id):
-        sql = """ UPDATE students SET correct = $1, incorrect = $2, book_id = $3 WHERE user_id = $4 """
+        sql = """ UPDATE students SET correct = $1, incorrect = $2 WHERE book_id = $3 AND user_id = $4 """
         await self.db.execute(sql, correct, incorrect, book_id, user_id, execute=True)
 
     async def sum_points(self, user_id):
@@ -47,3 +51,7 @@ class StudentsDB:
                     LEFT JOIN books b ON s.book_id = b.id 
                     WHERE u.full_name = $1 """
         return await self.db.execute(sql, full_name, fetch=True)
+
+    async def check_book_by_id(self, book_id):
+        sql = """ SELECT EXISTS (SELECT 1 FROM students WHERE book_id = $1) """
+        return await self.db.execute(sql, book_id, fetchval=True)

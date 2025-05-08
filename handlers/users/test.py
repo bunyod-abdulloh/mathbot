@@ -142,7 +142,12 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
     incorrect_text = "📝 Izoh:\n <blockquote expandable>" + "\n\n".join(
         in_correct_lines) + "</blockquote>" if in_correct else ""
 
-    await stdb.set_student_point(correct=correct_count, incorrect=incorrect_count, book_id=book_id, user_id=user_id)
+    check_book = await stdb.check_book_by_id(book_id=book_id)
+
+    if check_book:
+        await stdb.set_student_point(correct=correct_count, incorrect=incorrect_count, book_id=book_id, user_id=user_id)
+    else:
+        await stdb.add_student_datas(user_id=user_id, book_id=book_id, correct=correct_count, incorrect=incorrect_count)
     all_points = await stdb.sum_points(user_id=user_id)
     full_name = await udb.get_full_name(user_id=user_id)
     text = str()
