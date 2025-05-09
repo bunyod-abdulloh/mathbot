@@ -1,3 +1,5 @@
+import datetime
+
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from magic_filter import F
@@ -137,9 +139,10 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
         in_correct_lines) + "</blockquote>" if in_correct else ""
 
     check_book = await stdb.check_book_by_id(book_id=book_id, user_id=user_id)
-
+    current_date = datetime.date.today()
     if check_book:
-        await stdb.set_student_point(correct=correct_count, incorrect=incorrect_count, book_id=book_id, user_id=user_id)
+        await stdb.set_student_point(correct=correct_count, incorrect=incorrect_count, book_id=book_id, user_id=user_id,
+                                     date=current_date)
     else:
         await stdb.add_student_datas(user_id=user_id, book_id=book_id, correct=correct_count, incorrect=incorrect_count)
     all_points = await stdb.sum_points(user_id=user_id)
