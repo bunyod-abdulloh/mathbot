@@ -1,7 +1,8 @@
 from aiogram import types
 
+from data.config import ADMIN_GROUP
 from keyboards.inline.users_ikb import key_returner, user_main_ikb
-from loader import stdb, bks
+from loader import stdb, bks, bot
 
 
 def extracter(datas, delimiter):
@@ -15,20 +16,22 @@ async def send_results_page(call: types.CallbackQuery, current_page, all_pages, 
     await call.answer(cache_time=0)
     try:
         result = str()
-        result += (f"👤 Foydalanuvchi: {extract_datas['full_name']}\n"
-                   f"📘 Test: {extract_datas['name']}\n"
-                   f"✅ To'g'ri: {extract_datas['correct']}\n"
-                   f"❌ Noto'g'ri: {extract_datas['incorrect']}\n\n")
+        for n in extract_datas:
+            result += (f"👤 Foydalanuvchi: {n['full_name']}\n"
+                       f"📘 Test: {n['name']}\n"
+                       f"✅ To'g'ri: {n['correct']}\n"
+                       f"❌ Noto'g'ri: {n['incorrect']}\n\n")
+
         await call.message.edit_text(text=f"🏁 Bugungi natijalar:\n\n{result}\n",
                                      reply_markup=key_returner(current_page=current_page, all_pages=all_pages))
     except Exception as err:
-        await call.answer(text=f"Xatolik: {err}", show_alert=True)
+        await bot.send_message(chat_id=ADMIN_GROUP, text=f"Xatolik: {err}", show_alert=True)
 
 
 async def process_results_page(call: types.CallbackQuery, direction: str):
-    all_students = await stdb.get_all_rating()
+    all_students = await stdb.get_today_ratings()
 
-    extract = extracter(datas=all_students, delimiter=50)
+    extract = extracter(datas=all_students, delimiter=10)
     current_page = int(call.data.split(":")[1])
     all_pages = len(extract)
 
@@ -38,7 +41,6 @@ async def process_results_page(call: types.CallbackQuery, direction: str):
         current_page = current_page + 1 if current_page < all_pages else 1
 
     extracted_datas = extract[current_page - 1]
-
     await send_results_page(call=call, current_page=current_page, all_pages=all_pages, extract_datas=extracted_datas)
 
 

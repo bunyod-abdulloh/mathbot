@@ -144,7 +144,7 @@ async def handle_user_answers(message: types.Message, state: FSMContext):
 
     await message.answer(
         text=f"👤 <b>{full_name}</b>\n📩 Javoblaringiz qabul qilindi.\n\n"
-             f"📊 Natijangiz::\n\n"
+             f"📊 Natijangiz:\n\n"
              f"✅ To‘g‘ri javoblar: {correct_count} ta\n"
              f"❌ Noto‘g‘ri javoblar: {incorrect_count} ta\n"
              f"🎯 Jami ball: {all_points}\n\n"
