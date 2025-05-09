@@ -4,10 +4,9 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from magic_filter import F
 
-from keyboards.inline.users_ikb import user_main_ikb
 from loader import dp, bks, udb, stdb
-from services.functions import answer_text, no_test_text, enter_full_name_text, test_input_prompt, \
-    incomplete_answers_text, user_not_found_text
+from services.functions import enter_full_name_text, test_input_prompt, \
+    incomplete_answers_text, user_not_found_text, check_books
 from states.users import UserStates
 
 
@@ -20,11 +19,7 @@ async def handle_user_main(message: types.Message, state: FSMContext):
         await state.update_data(student_user_id=user['id'])
 
         if user['full_name']:
-            books = await bks.get_books()
-            if not books:
-                await message.answer(text=no_test_text)
-            else:
-                await message.answer(text=answer_text, reply_markup=user_main_ikb(books=books))
+            await check_books(message=message)
         else:
             await message.answer(text=enter_full_name_text)
             await UserStates.GET_FULLNAME.set()
@@ -39,12 +34,7 @@ async def handle_get_fullname(message: types.Message, state: FSMContext):
         user_id = data.get('student_user_id')
         full_name = message.text
         await udb.set_full_name(full_name=full_name, user_id=user_id)
-        books = await bks.get_books()
-
-        if not books:
-            await message.answer(text=no_test_text)
-        else:
-            await message.answer(text=answer_text, reply_markup=user_main_ikb(books=books))
+        await check_books(message=message)
     else:
         await message.answer(text="⚠️ <b>Ma'lumot noto‘g‘ri kiritildi!</b>\n\n"
                                   "📝 Iltimos, ma'lumotni <b>namunadagidek</b> kiriting\n")

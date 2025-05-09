@@ -9,3 +9,4 @@ class AdminStates(StatesGroup):
     ADD_TEXT_KEYS = State()
     GET_FULL_NAME = State()
     DEL_USER = State()
+    RENAME_BOOKS = State()

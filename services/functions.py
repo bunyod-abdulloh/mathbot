@@ -1,7 +1,7 @@
 from aiogram import types
 
-from keyboards.inline.users_ikb import key_returner
-from loader import stdb
+from keyboards.inline.users_ikb import key_returner, user_main_ikb
+from loader import stdb, bks
 
 
 def extracter(datas, delimiter):
@@ -41,6 +41,13 @@ async def process_results_page(call: types.CallbackQuery, direction: str):
 
     await send_results_page(call=call, current_page=current_page, all_pages=all_pages, extract_datas=extracted_datas)
 
+
+async def check_books(message: types.Message):
+    books = await bks.get_books()
+    if not books:
+        await message.answer(text=no_test_text)
+    else:
+        await message.answer(text=answer_text, reply_markup=user_main_ikb(books=books))
 
 answer_text = "📝 Javoblarni yuborish uchun 📚 testni tanlang:"
 

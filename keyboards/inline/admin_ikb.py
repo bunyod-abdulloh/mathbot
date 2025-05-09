@@ -27,3 +27,10 @@ def admin_clear_rating_ikb():
     btn.add(InlineKeyboardButton(text="❌ Yo'q", callback_data="admin_no"),
             InlineKeyboardButton(text="✅ Ha", callback_data="admin_yes"))
     return btn
+
+
+def rename_books_ikb(books):
+    btn = InlineKeyboardMarkup(row_width=1)
+    for book in books:
+        btn.insert(InlineKeyboardButton(text=book['name'], callback_data=f"rename_books:{book['book_id']}"))
+    return btn
