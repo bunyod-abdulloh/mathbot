@@ -13,9 +13,6 @@ def parse_answers(csv_file_path):
     return results
 
 
-answers = parse_answers("math_book_ids.json")
-print(answers)
-
 book_datas = [{'book_id': 21, 'name': 'Sonning boʻluvchilari 2', 'question_number': 1, 'answer': 'c'},
               {'book_id': 21, 'name': 'Sonning boʻluvchilari 2', 'question_number': 2, 'answer': 'a'},
               {'book_id': 21, 'name': 'Sonning boʻluvchilari 2', 'question_number': 3, 'answer': 'b'},
