@@ -10,7 +10,7 @@ class UsersAdminsDB:
         sql = "INSERT INTO users (telegram_id) VALUES ($1) ON CONFLICT (telegram_id) DO NOTHING"
         await self.db.execute(sql, telegram_id, execute=True)
 
-    async def add_example_user(self, telegram_id, full_name):
+    async def add_user_to_db(self, telegram_id, full_name):
         sql = """ INSERT INTO users(telegram_id, full_name) VALUES($1, $2) """
         await self.db.execute(sql, telegram_id, full_name, execute=True)
 
@@ -29,6 +29,10 @@ class UsersAdminsDB:
 
     async def select_all_users(self):
         sql = "SELECT telegram_id FROM users "
+        return await self.db.execute(sql, fetch=True)
+
+    async def select_all_users_datas(self):
+        sql = "SELECT telegram_id, full_name FROM users "
         return await self.db.execute(sql, fetch=True)
 
     async def count_users(self):
