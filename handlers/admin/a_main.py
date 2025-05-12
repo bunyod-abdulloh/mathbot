@@ -6,7 +6,7 @@ from aiogram.dispatcher.filters import Command
 from magic_filter import F
 
 from filters.admins import IsBotAdminFilter
-from handlers.users.start import bot_start
+from handlers.users.a_start import bot_start
 from keyboards.default.admin_buttons import admin_main_buttons
 from loader import dp, udb
 from services.db_functions import send_message_to_users, send_media_group_to_users
